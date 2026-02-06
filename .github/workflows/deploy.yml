@@ -5,7 +5,11 @@ on:
     branches:
       - main  # Only triggers when you push to the main branch
 
-jobs:
+
+
+  
+  
+  
   deploy:
     runs-on: ubuntu-latest
 
@@ -22,6 +26,3 @@ jobs:
 
       - name: Sync to S3
         run: |
-          # We removed --acl public-read because modern buckets disable ACLs by default
-          # This follows the "Principle of Least Privilege" mentioned in your resume
-          aws s3 sync . s3://your-bucket-name-here --exclude ".git/*" --exclude ".github/*"
