@@ -3,13 +3,9 @@ name: Automated Web Pipeline
 on:
   push:
     branches:
-      - main  # Only triggers when you push to the main branch
+      - main  # This ensures the pipeline runs every time you push code to the main branch
 
-
-
-  
-  
-  
+jobs:
   deploy:
     runs-on: ubuntu-latest
 
@@ -22,7 +18,11 @@ on:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1 # Change this to your bucket's region (e.g., ap-south-1)
+          aws-region: us-east-1 # Double check if your bucket is in us-east-1 or ap-south-1
 
       - name: Sync to S3
         run: |
+          # Syncing files to S3
+          # We removed --acl public-read to avoid the 'PutObject' error
+          # The bucket policy you already have handles the public access
+          aws s3 sync . s3://fathima-my-first-web-pipeline --exclude ".git/*" --exclude ".github/*"
