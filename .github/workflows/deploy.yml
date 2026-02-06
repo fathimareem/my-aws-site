@@ -1,24 +1,27 @@
-name: Deploy Website to S3
+name: Automated Web Pipeline
 
 on:
   push:
     branches:
-      - main
+      - main  # Only triggers when you push to the main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
 
-    - name: Sync to S3
-      uses: jakejarvis/s3-sync-action@master
-      with:
-        args: --acl public-read --follow-symlinks --delete
-      env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_BUCKET_NAME }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: 'us-east-1' # Double check if your S3 bucket is in us-east-1!
-        SOURCE_DIR: './'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 # Change this to your bucket's region (e.g., ap-south-1)
+
+      - name: Sync to S3
+        run: |
+          # We removed --acl public-read because modern buckets disable ACLs by default
+          # This follows the "Principle of Least Privilege" mentioned in your resume
+          aws s3 sync . s3://your-bucket-name-here --exclude ".git/*" --exclude ".github/*"
